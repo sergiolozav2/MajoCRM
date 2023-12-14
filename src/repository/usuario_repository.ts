@@ -1,5 +1,5 @@
-import { Usuario } from "@prisma/client";
-import { prisma } from "../app";
+import { Usuario } from '@prisma/client';
+import { prisma } from '../app';
 
 export class UsuarioRepository {
   obtener(usuarioID: number) {
@@ -13,18 +13,18 @@ export class UsuarioRepository {
 
   crear(data: Usuario) {
     const usuario = prisma.usuario.create({
-        data: data,
-    })
+      data: data,
+    });
     return usuario;
   }
 
   editar(data: Usuario) {
     const usuario = prisma.usuario.update({
-        data: data,
-        where: {
-            usuarioID: data.usuarioID,
-        }
-    })
+      data: data,
+      where: {
+        usuarioID: data.usuarioID,
+      },
+    });
     return usuario;
   }
 }

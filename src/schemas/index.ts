@@ -1,1 +1,1 @@
-export * from './usuario_schemas'
+export * from './usuario_schemas';

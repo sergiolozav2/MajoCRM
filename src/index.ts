@@ -1,12 +1,10 @@
-import fastify from 'fastify'
-import { server } from './app'
-
-
+import fastify from 'fastify';
+import { server } from './app';
 
 server.listen({ port: 5000 }, (err, address) => {
   if (err) {
-    console.error(err)
-    process.exit(1)
+    console.error(err);
+    process.exit(1);
   }
-  console.log(`Server listening at ${address}`)
-})
+  console.log(`Server listening at ${address}`);
+});
