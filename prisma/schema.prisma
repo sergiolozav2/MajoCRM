@@ -1,0 +1,212 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// generator dbml {
+//   provider            = "prisma-dbml-generator"
+//   projectDatabaseType = "PostgreSQL"
+// }
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  usuarioID       Int      @id @default(autoincrement())
+  creadoEn        DateTime @default(now())
+  role            Role     @default(USER)
+  nombre          String
+  apellido        String
+  segundoApellido String
+  telefono        String
+  password        String
+  empresaCreada         Empresa? @relation("EmpresaUsuarioCreada")
+  licencia Licencia?
+
+  itemsCreados           Item[]
+  etiquetaClienteCreados EtiquetaCliente[]
+  mensajesImportantesCreados MensajeImportante[]
+  tareasCreadas          Tarea[]           @relation("TareaUsuarioCreado")
+  tareasAsignadas        Tarea[]           @relation("TareaUsuarioAsignado")
+  
+  empresa            Empresa?          @relation("EmpresaUsuarioTrabajo", fields: [empresaID], references: [empresaID])
+  empresaID          Int
+
+}
+
+model Empresa {
+  empresaID Int      @id @default(autoincrement())
+  creadoEn  DateTime @default(now())
+
+  nombreEmpresa String
+  creador       Usuario @relation("EmpresaUsuarioCreada", fields: [creadorID], references: [usuarioID])
+  creadorID     Int     @unique
+
+  items            Item[]
+  clientes         Cliente[]
+  etiquetaClientes EtiquetaCliente[]
+  mensajesImportantes MensajeImportante[]
+  trabajadores Usuario[] @relation("EmpresaUsuarioTrabajo")
+}
+
+model Mensaje {
+  mensajeID Int      @id @default(autoincrement())
+  creadoEn  DateTime @default(now())
+
+  contenido   String
+  tipoMensaje TipoMensaje
+  mensajeImportante MensajeImportante?
+  cliente     Cliente     @relation(fields: [clienteID], references: [clienteID])
+  clienteID   Int
+}
+
+model ClienteIdentidad {
+  clienteIdentidadID Int      @id @default(autoincrement())
+  creadoEn           DateTime @default(now())
+
+  identificador  String    @unique
+  clienteEmpresa Cliente[]
+}
+
+model Cliente {
+  clienteID Int      @id @default(autoincrement())
+  creadoEn  DateTime @default(now())
+
+  nombreCliente String        @default("")
+  canalContacto CanalContacto @default(WHATSAPP)
+
+  mensajes  Mensaje[]
+  tareas    Tarea[]
+  etiquetas EtiquetaClienteRelacion[]
+
+  clienteIdentidad   ClienteIdentidad @relation(fields: [clienteIdentidadID], references: [clienteIdentidadID])
+  clienteIdentidadID Int
+  empresa            Empresa          @relation(fields: [empresaID], references: [empresaID])
+  empresaID          Int
+}
+
+model EtiquetaClienteRelacion {
+  clienteID         Int
+  etiquetaClienteID Int
+  creadoEn          DateTime @default(now())
+
+  cliente         Cliente         @relation(fields: [clienteID], references: [clienteID])
+  etiquetaCliente EtiquetaCliente @relation(fields: [etiquetaClienteID], references: [etiquetaClienteID])
+
+  @@id([clienteID, etiquetaClienteID])
+}
+
+model EtiquetaCliente {
+  etiquetaClienteID Int      @id @default(autoincrement())
+  creadoEn          DateTime @default(now())
+
+  clientes EtiquetaClienteRelacion[]
+
+  creador   Usuario @relation(fields: [creadorID], references: [usuarioID])
+  creadorID Int
+
+  empresa   Empresa @relation(fields: [empresaID], references: [empresaID])
+  empresaID Int
+}
+
+model Item {
+  itemID   Int      @id @default(autoincrement())
+  creadoEn DateTime @default(now())
+
+  nombreItem       String
+  descripcion      String
+  precio           Float
+  informacionExtra Json?
+
+  creador   Usuario @relation(fields: [creadorID], references: [usuarioID])
+  creadorID Int
+  empresa   Empresa @relation(fields: [empresaID], references: [empresaID])
+  empresaID Int
+}
+
+model Tarea {
+  tareaID  Int      @id @default(autoincrement())
+  creadoEn DateTime @default(now())
+
+  nombreTarea String
+  descripcion String   @default("")
+  fechaInicio DateTime
+  fechaFin    DateTime
+
+  cliente    Cliente  @relation(fields: [clienteID], references: [clienteID])
+  clienteID  Int      @unique
+  creador    Usuario  @relation("TareaUsuarioCreado", fields: [creadorID], references: [usuarioID])
+  creadorID  Int
+  asignado   Usuario? @relation("TareaUsuarioAsignado", fields: [asignadoID], references: [usuarioID])
+  asignadoID Int?
+}
+
+model EtiquetaMensajeImportante {
+  etiquetaMensajeImportanteID  Int      @id @default(autoincrement())
+  creadoEn DateTime @default(now())
+
+  nombreEtiqueta String
+  mensajesImportantes MensajeImportante[]
+}
+
+model MensajeImportante {
+  creadoEn DateTime @default(now())
+
+  creador   Usuario @relation(fields: [creadorID], references: [usuarioID])
+  creadorID Int
+  empresa   Empresa @relation(fields: [empresaID], references: [empresaID])
+  empresaID Int
+  mensaje Mensaje @relation(fields: [mensajeID], references: [mensajeID])
+  mensajeID Int @unique
+  etiquetaMensajeImportante EtiquetaMensajeImportante? @relation(fields: [etiquetaMensajeImportanteID], references: [etiquetaMensajeImportanteID])
+  etiquetaMensajeImportanteID Int?
+
+  @@id([empresaID, mensajeID])
+}
+
+model Licencia {
+  licenciaID  Int      @id @default(autoincrement())
+  creadoEn DateTime @default(now())
+
+  fechaInicio DateTime
+  fechaFin DateTime
+  precio Float
+  licenciaPlan LicenciaPlan 
+  usuario       Usuario @relation(fields: [usuarioID], references: [usuarioID])
+  usuarioID     Int     @unique
+
+}
+
+enum Role {
+  ADMIN /// allowed to do everything
+  USER
+}
+
+enum LicenciaPlan {
+  DEMO
+  FREE
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+  PERMANENT
+}
+
+enum CanalContacto {
+  WHATSAPP
+}
+
+enum TipoMensaje {
+  TEXTO
+  UBICACION
+  ENLACE
+  CONTACTO
+  ARCHIVO
+  IMAGEN
+  VIDEO
+  AUDIO
+  STICKER
+}

@@ -1,0 +1,219 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Usuario {
+  usuarioID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  role Role [not null, default: 'USER']
+  nombre String [not null]
+  apellido String [not null]
+  segundoApellido String [not null]
+  telefono String [not null]
+  password String [not null]
+  empresaCreada Empresa
+  licencia Licencia
+  itemsCreados Item [not null]
+  etiquetaClienteCreados EtiquetaCliente [not null]
+  mensajesImportantesCreados MensajeImportante [not null]
+  tareasCreadas Tarea [not null]
+  tareasAsignadas Tarea [not null]
+  empresa Empresa
+  empresaID Int [not null]
+}
+
+Table Empresa {
+  empresaID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  nombreEmpresa String [not null]
+  creador Usuario [not null]
+  creadorID Int [unique, not null]
+  items Item [not null]
+  clientes Cliente [not null]
+  etiquetaClientes EtiquetaCliente [not null]
+  mensajesImportantes MensajeImportante [not null]
+  trabajadores Usuario [not null]
+}
+
+Table Mensaje {
+  mensajeID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  contenido String [not null]
+  tipoMensaje TipoMensaje [not null]
+  mensajeImportante MensajeImportante
+  cliente Cliente [not null]
+  clienteID Int [not null]
+}
+
+Table ClienteIdentidad {
+  clienteIdentidadID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  identificador String [unique, not null]
+  clienteEmpresa Cliente [not null]
+}
+
+Table Cliente {
+  clienteID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  nombreCliente String [not null, default: '']
+  canalContacto CanalContacto [not null, default: 'WHATSAPP']
+  mensajes Mensaje [not null]
+  tareas Tarea [not null]
+  etiquetas EtiquetaClienteRelacion [not null]
+  clienteIdentidad ClienteIdentidad [not null]
+  clienteIdentidadID Int [not null]
+  empresa Empresa [not null]
+  empresaID Int [not null]
+}
+
+Table EtiquetaClienteRelacion {
+  clienteID Int [not null]
+  etiquetaClienteID Int [not null]
+  creadoEn DateTime [default: `now()`, not null]
+  cliente Cliente [not null]
+  etiquetaCliente EtiquetaCliente [not null]
+
+  indexes {
+    (clienteID, etiquetaClienteID) [pk]
+  }
+}
+
+Table EtiquetaCliente {
+  etiquetaClienteID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  clientes EtiquetaClienteRelacion [not null]
+  creador Usuario [not null]
+  creadorID Int [not null]
+  empresa Empresa [not null]
+  empresaID Int [not null]
+}
+
+Table Item {
+  itemID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  nombreItem String [not null]
+  descripcion String [not null]
+  precio Float [not null]
+  informacionExtra Json
+  creador Usuario [not null]
+  creadorID Int [not null]
+  empresa Empresa [not null]
+  empresaID Int [not null]
+}
+
+Table Tarea {
+  tareaID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  nombreTarea String [not null]
+  descripcion String [not null, default: '']
+  fechaInicio DateTime [not null]
+  fechaFin DateTime [not null]
+  cliente Cliente [not null]
+  clienteID Int [unique, not null]
+  creador Usuario [not null]
+  creadorID Int [not null]
+  asignado Usuario
+  asignadoID Int
+}
+
+Table EtiquetaMensajeImportante {
+  etiquetaMensajeImportanteID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  nombreEtiqueta String [not null]
+  mensajesImportantes MensajeImportante [not null]
+}
+
+Table MensajeImportante {
+  creadoEn DateTime [default: `now()`, not null]
+  creador Usuario [not null]
+  creadorID Int [not null]
+  empresa Empresa [not null]
+  empresaID Int [not null]
+  mensaje Mensaje [not null]
+  mensajeID Int [unique, not null]
+  etiquetaMensajeImportante EtiquetaMensajeImportante
+  etiquetaMensajeImportanteID Int
+
+  indexes {
+    (empresaID, mensajeID) [pk]
+  }
+}
+
+Table Licencia {
+  licenciaID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  fechaInicio DateTime [not null]
+  fechaFin DateTime [not null]
+  precio Float [not null]
+  licenciaPlan LicenciaPlan [not null]
+  usuario Usuario [not null]
+  usuarioID Int [unique, not null]
+}
+
+Enum Role {
+  ADMIN
+  USER
+}
+
+Enum LicenciaPlan {
+  DEMO
+  FREE
+  BASIC
+  PROFESSIONAL
+  ENTERPRISE
+  PERMANENT
+}
+
+Enum CanalContacto {
+  WHATSAPP
+}
+
+Enum TipoMensaje {
+  TEXTO
+  UBICACION
+  ENLACE
+  CONTACTO
+  ARCHIVO
+  IMAGEN
+  VIDEO
+  AUDIO
+  STICKER
+}
+
+Ref: Usuario.empresaID - Empresa.empresaID
+
+Ref: Empresa.creadorID - Usuario.usuarioID
+
+Ref: Mensaje.clienteID > Cliente.clienteID
+
+Ref: Cliente.clienteIdentidadID > ClienteIdentidad.clienteIdentidadID
+
+Ref: Cliente.empresaID > Empresa.empresaID
+
+Ref: EtiquetaClienteRelacion.clienteID > Cliente.clienteID
+
+Ref: EtiquetaClienteRelacion.etiquetaClienteID > EtiquetaCliente.etiquetaClienteID
+
+Ref: EtiquetaCliente.creadorID > Usuario.usuarioID
+
+Ref: EtiquetaCliente.empresaID > Empresa.empresaID
+
+Ref: Item.creadorID > Usuario.usuarioID
+
+Ref: Item.empresaID > Empresa.empresaID
+
+Ref: Tarea.clienteID > Cliente.clienteID
+
+Ref: Tarea.creadorID > Usuario.usuarioID
+
+Ref: Tarea.asignadoID > Usuario.usuarioID
+
+Ref: MensajeImportante.creadorID > Usuario.usuarioID
+
+Ref: MensajeImportante.empresaID > Empresa.empresaID
+
+Ref: MensajeImportante.mensajeID - Mensaje.mensajeID
+
+Ref: MensajeImportante.etiquetaMensajeImportanteID > EtiquetaMensajeImportante.etiquetaMensajeImportanteID
+
+Ref: Licencia.usuarioID - Usuario.usuarioID
