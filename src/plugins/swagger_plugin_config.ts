@@ -5,8 +5,7 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 export const swaggerOptions = {
   swagger: {
     info: {
-      title: "Blabla API",
-      description: "Blabla API endpoints",
+      title: "MajoCRM",
       version: "0.0.1",
     },
     host: "127.0.0.1:5000",
