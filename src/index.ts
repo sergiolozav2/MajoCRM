@@ -1,4 +1,3 @@
-import fastify from 'fastify';
 import { server } from './app';
 
 server.listen({ port: 5000 }, (err, address) => {

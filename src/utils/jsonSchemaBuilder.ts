@@ -4,6 +4,7 @@ interface schemaType {
   params?: any;
   querystring?: any;
   response?: any;
+  tags?: string[];
 }
 
 export function schema(data: schemaType) {
@@ -12,4 +13,12 @@ export function schema(data: schemaType) {
       ...data,
     },
   };
+}
+
+export function schemaPartial(data: schemaType) {
+  return (data2: schemaType) =>
+    schema({
+      ...data,
+      ...data2,
+    });
 }
