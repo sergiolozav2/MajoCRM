@@ -11,7 +11,12 @@ export class AuthSchemas {
       password: Type.String(),
     }),
     empresa: Type.Object({
-        nombreEmpresa: Type.String(),
-    })
+      nombreEmpresa: Type.String(),
+    }),
+  });
+
+  static iniciarSesion = Type.Object({
+    email: Type.String({ format: 'email' }),
+    password: Type.String(),
   });
 }

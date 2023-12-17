@@ -16,6 +16,13 @@ function usuarioRoutes(
     }),
     AuthController.registrarUsuario,
   );
+  fastify.post(
+    '/login',
+    schema({
+      body: AuthSchemas.iniciarSesion,
+    }),
+    AuthController.iniciarSesion,
+  );
 
   done();
 }

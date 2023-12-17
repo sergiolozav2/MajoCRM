@@ -4,8 +4,10 @@ import { TipoUsuario } from '@prisma/client';
 import { AuthSchemas } from '../schemas';
 import { prisma } from '../prisma';
 import { AuthServices } from '../services';
+import { ErrorLoginInvalido } from '../errors';
 
 type registrarUsuarioBody = Static<typeof AuthSchemas.registrarUsuario>;
+type iniciarSesionBody = Static<typeof AuthSchemas.iniciarSesion>;
 
 export class AuthController {
   static async registrarUsuario(
@@ -25,5 +27,45 @@ export class AuthController {
       },
     });
     return usuario;
+  }
+
+  static async iniciarSesion(
+    req: FastifyRequest<{ Body: iniciarSesionBody }>,
+    reply: FastifyReply,
+  ) {
+    const usuario = await prisma.usuario.findFirst({
+      where: {
+        correo: req.body.email,
+      },
+      select: {
+        usuarioID: true,
+        password: true,
+      },
+    });
+
+    if (usuario === null) {
+      throw new ErrorLoginInvalido();
+    }
+    const password = req.body.password;
+    const hashed = usuario.password;
+    const iguales = await AuthServices.passwordEqual(password, hashed);
+    if (!iguales) {
+      throw new ErrorLoginInvalido();
+    }
+    const usuarioInfo = await prisma.usuario.findFirst({
+      where: {
+        usuarioID: usuario.usuarioID,
+      },
+      select: {
+        usuarioID: true,
+        nombre: true,
+        correo: true,
+        empresaCreada: true,
+        tipo: true,
+        telefono: true,
+      }
+    });
+
+    return usuarioInfo;
   }
 }
