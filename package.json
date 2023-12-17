@@ -22,9 +22,11 @@
     "@fastify/type-provider-typebox": "^3.5.0",
     "@prisma/client": "^5.7.0",
     "@sinclair/typebox": "^0.31.28",
+    "bcrypt": "^5.1.1",
     "fastify": "^4.25.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.10.4",
     "dotenv-cli": "^7.3.0",
     "nodemon": "^3.0.2",
