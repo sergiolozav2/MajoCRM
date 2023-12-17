@@ -36,9 +36,9 @@ model Usuario {
   rolesCreados               Rol[]               @relation("RolesCreados")
 
   empresa   Empresa? @relation("EmpresaUsuarioTrabajo", fields: [empresaID], references: [empresaID])
-  empresaID Int
+  empresaID Int?
   rol       Rol?     @relation("RolUsuario", fields: [rolID], references: [rolID])
-  rolID     Int
+  rolID     Int?
 }
 
 model Empresa {
