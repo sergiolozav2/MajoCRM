@@ -11,7 +11,7 @@ import {
   swaggerUiOptions,
 } from './plugins/swagger_plugin_config';
 
-export const server = fastify();
+export const server = fastify({logger: true});
 
 server.register(fastifyCors, {});
 server.register(fastifySwagger, swaggerOptions);
