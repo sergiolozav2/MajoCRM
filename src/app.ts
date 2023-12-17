@@ -11,8 +11,6 @@ import {
   swaggerUiOptions,
 } from './plugins/swagger_plugin_config';
 
-export const prisma = new PrismaClient();
-
 export const server = fastify();
 
 server.register(fastifyCors, {});

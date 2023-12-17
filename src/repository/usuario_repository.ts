@@ -1,5 +1,5 @@
 import { Usuario } from '@prisma/client';
-import { prisma } from '../app';
+import { prisma } from '../prisma';
 
 export class UsuarioRepository {
   obtener(usuarioID: number) {
