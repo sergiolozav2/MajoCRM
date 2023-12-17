@@ -16,26 +16,28 @@ datasource db {
 }
 
 model Usuario {
-  usuarioID       Int      @id @default(autoincrement())
-  creadoEn        DateTime @default(now())
-  role            Role     @default(USER)
+  usuarioID       Int         @id @default(autoincrement())
+  creadoEn        DateTime    @default(now())
+  tipo            TipoUsuario
   nombre          String
   apellido        String
   segundoApellido String
   telefono        String
   password        String
-  empresaCreada         Empresa? @relation("EmpresaUsuarioCreada")
-  licencia Licencia?
+  empresaCreada   Empresa?    @relation("EmpresaUsuarioCreada")
+  licencia        Licencia?
 
-  itemsCreados           Item[]
-  etiquetaClienteCreados EtiquetaCliente[]
+  itemsCreados               Item[]
+  etiquetaClienteCreados     EtiquetaCliente[]
   mensajesImportantesCreados MensajeImportante[]
-  tareasCreadas          Tarea[]           @relation("TareaUsuarioCreado")
-  tareasAsignadas        Tarea[]           @relation("TareaUsuarioAsignado")
-  
-  empresa            Empresa?          @relation("EmpresaUsuarioTrabajo", fields: [empresaID], references: [empresaID])
-  empresaID          Int
+  tareasCreadas              Tarea[]             @relation("TareaUsuarioCreado")
+  tareasAsignadas            Tarea[]             @relation("TareaUsuarioAsignado")
+  rolesCreados               Rol[]               @relation("RolesCreados")
 
+  empresa   Empresa? @relation("EmpresaUsuarioTrabajo", fields: [empresaID], references: [empresaID])
+  empresaID Int
+  rol       Rol?     @relation("RolUsuario", fields: [rolID], references: [rolID])
+  rolID     Int
 }
 
 model Empresa {
@@ -46,10 +48,12 @@ model Empresa {
   creador       Usuario @relation("EmpresaUsuarioCreada", fields: [creadorID], references: [usuarioID])
   creadorID     Int     @unique
 
-  items            Item[]
-  clientes         Cliente[]
-  etiquetaClientes EtiquetaCliente[]
+  items               Item[]
+  clientes            Cliente[]
+  etiquetaClientes    EtiquetaCliente[]
   mensajesImportantes MensajeImportante[]
+  roles               Rol[]
+
   trabajadores Usuario[] @relation("EmpresaUsuarioTrabajo")
 }
 
@@ -57,11 +61,11 @@ model Mensaje {
   mensajeID Int      @id @default(autoincrement())
   creadoEn  DateTime @default(now())
 
-  contenido   String
-  tipoMensaje TipoMensaje
+  contenido         String
+  tipoMensaje       TipoMensaje
   mensajeImportante MensajeImportante?
-  cliente     Cliente     @relation(fields: [clienteID], references: [clienteID])
-  clienteID   Int
+  cliente           Cliente            @relation(fields: [clienteID], references: [clienteID])
+  clienteID         Int
 }
 
 model ClienteIdentidad {
@@ -146,44 +150,71 @@ model Tarea {
 }
 
 model EtiquetaMensajeImportante {
-  etiquetaMensajeImportanteID  Int      @id @default(autoincrement())
-  creadoEn DateTime @default(now())
+  etiquetaMensajeImportanteID Int      @id @default(autoincrement())
+  creadoEn                    DateTime @default(now())
 
-  nombreEtiqueta String
+  nombreEtiqueta      String
   mensajesImportantes MensajeImportante[]
 }
 
 model MensajeImportante {
   creadoEn DateTime @default(now())
 
-  creador   Usuario @relation(fields: [creadorID], references: [usuarioID])
-  creadorID Int
-  empresa   Empresa @relation(fields: [empresaID], references: [empresaID])
-  empresaID Int
-  mensaje Mensaje @relation(fields: [mensajeID], references: [mensajeID])
-  mensajeID Int @unique
-  etiquetaMensajeImportante EtiquetaMensajeImportante? @relation(fields: [etiquetaMensajeImportanteID], references: [etiquetaMensajeImportanteID])
+  creador                     Usuario                    @relation(fields: [creadorID], references: [usuarioID])
+  creadorID                   Int
+  empresa                     Empresa                    @relation(fields: [empresaID], references: [empresaID])
+  empresaID                   Int
+  mensaje                     Mensaje                    @relation(fields: [mensajeID], references: [mensajeID])
+  mensajeID                   Int                        @unique
+  etiquetaMensajeImportante   EtiquetaMensajeImportante? @relation(fields: [etiquetaMensajeImportanteID], references: [etiquetaMensajeImportanteID])
   etiquetaMensajeImportanteID Int?
 
   @@id([empresaID, mensajeID])
 }
 
 model Licencia {
-  licenciaID  Int      @id @default(autoincrement())
-  creadoEn DateTime @default(now())
+  licenciaID Int      @id @default(autoincrement())
+  creadoEn   DateTime @default(now())
 
-  fechaInicio DateTime
-  fechaFin DateTime
-  precio Float
-  licenciaPlan LicenciaPlan 
-  usuario       Usuario @relation(fields: [usuarioID], references: [usuarioID])
-  usuarioID     Int     @unique
-
+  fechaInicio  DateTime
+  fechaFin     DateTime
+  precio       Float
+  licenciaPlan LicenciaPlan
+  usuario      Usuario      @relation(fields: [usuarioID], references: [usuarioID])
+  usuarioID    Int          @unique
 }
 
-enum Role {
-  ADMIN /// allowed to do everything
-  USER
+model Rol {
+  rolID    Int      @id @default(autoincrement())
+  creadoEn DateTime @default(now())
+
+  nombreRol   String
+  descripcion String @default("")
+
+  usuarios Usuario[] @relation("RolUsuario")
+
+  creador   Usuario      @relation("RolesCreados", fields: [creadorID], references: [usuarioID])
+  creadorID Int          @unique
+  empresa   Empresa      @relation(fields: [empresaID], references: [empresaID])
+  empresaID Int
+  permisos  PermisoRol[]
+}
+
+model PermisoRol {
+  rolID    Int
+  tipo     TipoPermiso
+  creadoEn DateTime    @default(now())
+
+  rol Rol @relation(fields: [rolID], references: [rolID])
+
+  @@id([rolID, tipo])
+}
+
+enum TipoUsuario {
+  EMPRESARIO /// allowed to do everything
+  COLABORADOR
+  ADMINISTRADOR
+  DEV
 }
 
 enum LicenciaPlan {
@@ -209,4 +240,15 @@ enum TipoMensaje {
   VIDEO
   AUDIO
   STICKER
+}
+
+enum TipoPermiso {
+  MODULO_CHAT
+  MODULO_PRODUCTO
+  MODULO_COLABORADOR
+  MODULO_PUBLICIDAD
+  MODULO_CHATBOT
+  MODULO_CLIENTE
+  MODULO_EMPRESA
+  MODULO_OPCIONES
 }

@@ -5,7 +5,7 @@
 Table Usuario {
   usuarioID Int [pk, increment]
   creadoEn DateTime [default: `now()`, not null]
-  role Role [not null, default: 'USER']
+  tipo TipoUsuario [not null]
   nombre String [not null]
   apellido String [not null]
   segundoApellido String [not null]
@@ -18,8 +18,11 @@ Table Usuario {
   mensajesImportantesCreados MensajeImportante [not null]
   tareasCreadas Tarea [not null]
   tareasAsignadas Tarea [not null]
+  rolesCreados Rol [not null]
   empresa Empresa
   empresaID Int [not null]
+  rol Rol
+  rolID Int [not null]
 }
 
 Table Empresa {
@@ -32,6 +35,7 @@ Table Empresa {
   clientes Cliente [not null]
   etiquetaClientes EtiquetaCliente [not null]
   mensajesImportantes MensajeImportante [not null]
+  roles Rol [not null]
   trabajadores Usuario [not null]
 }
 
@@ -150,9 +154,35 @@ Table Licencia {
   usuarioID Int [unique, not null]
 }
 
-Enum Role {
-  ADMIN
-  USER
+Table Rol {
+  rolID Int [pk, increment]
+  creadoEn DateTime [default: `now()`, not null]
+  nombreRol String [not null]
+  descripcion String [not null, default: '']
+  usuarios Usuario [not null]
+  creador Usuario [not null]
+  creadorID Int [unique, not null]
+  empresa Empresa [not null]
+  empresaID Int [not null]
+  permisos PermisoRol [not null]
+}
+
+Table PermisoRol {
+  rolID Int [not null]
+  tipo TipoPermiso [not null]
+  creadoEn DateTime [default: `now()`, not null]
+  rol Rol [not null]
+
+  indexes {
+    (rolID, tipo) [pk]
+  }
+}
+
+Enum TipoUsuario {
+  EMPRESARIO
+  COLABORADOR
+  ADMINISTRADOR
+  DEV
 }
 
 Enum LicenciaPlan {
@@ -180,7 +210,20 @@ Enum TipoMensaje {
   STICKER
 }
 
+Enum TipoPermiso {
+  MODULO_CHAT
+  MODULO_PRODUCTO
+  MODULO_COLABORADOR
+  MODULO_PUBLICIDAD
+  MODULO_CHATBOT
+  MODULO_CLIENTE
+  MODULO_EMPRESA
+  MODULO_OPCIONES
+}
+
 Ref: Usuario.empresaID - Empresa.empresaID
+
+Ref: Usuario.rolID > Rol.rolID
 
 Ref: Empresa.creadorID - Usuario.usuarioID
 
@@ -217,3 +260,9 @@ Ref: MensajeImportante.mensajeID - Mensaje.mensajeID
 Ref: MensajeImportante.etiquetaMensajeImportanteID > EtiquetaMensajeImportante.etiquetaMensajeImportanteID
 
 Ref: Licencia.usuarioID - Usuario.usuarioID
+
+Ref: Rol.creadorID > Usuario.usuarioID
+
+Ref: Rol.empresaID > Empresa.empresaID
+
+Ref: PermisoRol.rolID > Rol.rolID
