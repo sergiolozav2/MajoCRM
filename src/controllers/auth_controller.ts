@@ -16,7 +16,7 @@ export class AuthController {
   ) {
     const { password } = req.body.usuario;
     const hashedPassword = await AuthServices.hashPassword(password);
-    const usuario = prisma.usuario.create({
+    const usuario = await prisma.usuario.create({
       data: {
         ...req.body.usuario,
         password: hashedPassword,
@@ -26,7 +26,24 @@ export class AuthController {
         },
       },
     });
-    return usuario;
+
+    const usuarioInfo = await prisma.usuario.findFirst({
+      where: {
+        usuarioID: usuario.usuarioID,
+      },
+      select: {
+        usuarioID: true,
+        telefono: true,
+        nombre: true,
+        apellido: true,
+        correo: true,
+        licencia: true,
+        tipo: true,
+        rol: true,
+        empresaCreada: true,
+      },
+    });
+    return usuarioInfo;
   }
 
   static async iniciarSesion(
@@ -63,7 +80,7 @@ export class AuthController {
         empresaCreada: true,
         tipo: true,
         telefono: true,
-      }
+      },
     });
 
     return usuarioInfo;
