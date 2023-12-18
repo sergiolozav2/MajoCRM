@@ -1,4 +1,4 @@
-import fastify from 'fastify';
+import fastify, { FastifyHttpOptions, FastifyInstance } from 'fastify';
 import path from 'path';
 import autoload from '@fastify/autoload';
 import { errorHandlerPlugin } from './plugins/error_handler_plugin';
@@ -11,15 +11,15 @@ import {
   swaggerUiOptions,
 } from './plugins/swagger_plugin_config';
 
-export const server = fastify({logger: true});
+export const app = fastify({ logger: false });
 
-server.register(fastifyCors, {});
-server.register(fastifySwagger, swaggerOptions);
-server.register(fastifySwaggerUi, swaggerUiOptions);
+app.register(fastifyCors, {});
+app.register(fastifySwagger, swaggerOptions);
+app.register(fastifySwaggerUi, swaggerUiOptions);
 
-server.register(autoload, {
+app.register(autoload, {
   dir: path.join(__dirname, 'routes'),
   options: { prefix: '/api' },
 });
 
-server.register(errorHandlerPlugin);
+app.register(errorHandlerPlugin);
