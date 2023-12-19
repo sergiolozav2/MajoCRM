@@ -4,10 +4,11 @@ import { TipoUsuario } from '@prisma/client';
 import { AuthSchemas } from '../schemas';
 import { prisma } from '../prisma';
 import { AuthServices } from '../services';
-import { ErrorLoginInvalido } from '../errors';
+import { ErrorLoginInvalido, ErrorTokenInvalido } from '../errors';
 
 type registrarUsuarioBody = Static<typeof AuthSchemas.registrarUsuario>;
 type iniciarSesionBody = Static<typeof AuthSchemas.iniciarSesion>;
+type autorizarTokenHeader = Static<typeof AuthSchemas.autorizarToken>;
 
 export class AuthController {
   static async registrarUsuario(
@@ -50,7 +51,7 @@ export class AuthController {
     req: FastifyRequest<{ Body: iniciarSesionBody }>,
     reply: FastifyReply,
   ) {
-    const usuario = await prisma.usuario.findFirst({
+    const usuarioVerificar = await prisma.usuario.findFirst({
       where: {
         correo: req.body.email,
       },
@@ -60,18 +61,19 @@ export class AuthController {
       },
     });
 
-    if (usuario === null) {
+    if (usuarioVerificar === null) {
       throw new ErrorLoginInvalido();
     }
     const password = req.body.password;
-    const hashed = usuario.password;
+    const hashed = usuarioVerificar.password;
     const iguales = await AuthServices.passwordEqual(password, hashed);
     if (!iguales) {
       throw new ErrorLoginInvalido();
     }
-    const usuarioInfo = await prisma.usuario.findFirst({
+
+    const usuario = await prisma.usuario.findFirstOrThrow({
       where: {
-        usuarioID: usuario.usuarioID,
+        usuarioID: usuarioVerificar.usuarioID,
       },
       select: {
         usuarioID: true,
@@ -80,9 +82,26 @@ export class AuthController {
         empresaCreada: true,
         tipo: true,
         telefono: true,
+        licencia: true,
+        rol: true,
       },
     });
 
-    return usuarioInfo;
+    const token = req.server.crearToken(usuario.usuarioID);
+    const refreshToken = req.server.crearRefreshToken(usuario.usuarioID);
+    return { usuario, token, refreshToken };
+  }
+
+  static async reiniciarToken(
+    req: FastifyRequest<{ Headers: autorizarTokenHeader }>,
+    reply: FastifyReply,
+  ) {
+    const tokenString = req.headers.authorization;
+    const token = await req.server.decodificar(tokenString);
+    if (token.type === 'refresh') {
+      const refreshToken = req.server.crearRefreshToken(5);
+      return { refreshToken };
+    }
+    throw new ErrorTokenInvalido();
   }
 }

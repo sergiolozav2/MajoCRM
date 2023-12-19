@@ -19,4 +19,8 @@ export class AuthSchemas {
     email: Type.String({ format: 'email' }),
     password: Type.String(),
   });
+
+  static autorizarToken = Type.Object({
+    authorization: Type.String(),
+  });
 }

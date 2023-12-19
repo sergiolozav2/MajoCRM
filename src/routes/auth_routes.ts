@@ -24,6 +24,14 @@ function usuarioRoutes(
     AuthController.iniciarSesion,
   );
 
+  fastify.post(
+    '/refreshToken',
+    schema({
+      headers: AuthSchemas.autorizarToken,
+    }),
+    AuthController.reiniciarToken,
+  );
+
   done();
 }
 
