@@ -1,1 +1,1 @@
-export * from "./authenticate_middleware"
+export * from './authenticate_middleware';

@@ -47,4 +47,4 @@ function jwtPlugin_(
   done();
 }
 
-export const jwtPlugin = fp(jwtPlugin_) 
+export const jwtPlugin = fp(jwtPlugin_);
