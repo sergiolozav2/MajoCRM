@@ -3,9 +3,11 @@ import { CustomError } from '../errors/custom_error';
 import { STATUS_CODES } from 'http';
 import fastifyJwt from '@fastify/jwt';
 import { RefreshTokenType } from '../types';
-require("dotenv").config()
+import fp from 'fastify-plugin';
 
-export function jwtPlugin(
+require('dotenv').config();
+
+function jwtPlugin_(
   server: FastifyInstance,
   options: FastifyPluginOptions,
   done: () => void,
@@ -39,8 +41,10 @@ export function jwtPlugin(
   });
 
   server.decorate('decodificar', async (token) => {
-    const decoded = await server.jwt.verify(token);
+    const decoded = server.jwt.verify(token);
     return decoded as RefreshTokenType;
   });
   done();
 }
+
+export const jwtPlugin = fp(jwtPlugin_) 
