@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app } from '../../src/app';
-import { validUserRegisterPayload } from './auth_routes.data';
+import { borrarUsuario, validUserRegisterPayload } from './auth_routes.utils';
 import { prisma } from '../../src/prisma';
 
 describe('POST /register', () => {
@@ -24,16 +24,7 @@ describe('POST /register', () => {
         nombreEmpresa: 'empresacorp',
       },
     });
-    await prisma.empresa.delete({
-      where: {
-        creadorID: response.body.usuarioID,
-      },
-    });
-    await prisma.usuario.delete({
-      where: {
-        usuarioID: response.body.usuarioID,
-      },
-    });
+    await borrarUsuario(response.body.usuarioID);
   });
 
   it('debe fallar falta usuario', async () => {
@@ -81,6 +72,19 @@ describe('POST /login', () => {
     expect(response.statusCode).toBe(200);
   });
 
+  it('retorna token y refresh token', async () => {
+    const payload = {
+      email: userPayload.usuario.correo,
+      password: userPayload.usuario.password,
+    };
+    const response = await request(app.server).post(route).send(payload);
+
+    expect(response.body).toMatchObject({
+      token: expect.any(String),
+      refreshToken: expect.any(String),
+    });
+  });
+
   it('debe fallar email no existe', async () => {
     const payload = {
       email: 'correofalso12342@email.com',
@@ -97,5 +101,44 @@ describe('POST /login', () => {
     };
     const response = await request(app.server).post(route).send(payload);
     expect(response.statusCode).toBe(401);
+  });
+});
+
+describe('POST /refreshToken', () => {
+  const route = '/api/refreshToken';
+
+  const userPayload = validUserRegisterPayload;
+  let token = '';
+  let refreshToken = '';
+  let usuarioID = 0;
+  beforeAll(async () => {
+    await app.ready();
+    await request(app.server).post('/api/register').send(userPayload);
+
+    const response = await request(app.server).post('/api/login').send({
+      email: userPayload.usuario.correo,
+      password: userPayload.usuario.password,
+    });
+    usuarioID = response.body.usuario.usuarioID
+    token = response.body.token;
+    refreshToken = response.body.refreshToken;
+  });
+
+  afterAll(async () => {
+    await borrarUsuario(usuarioID)
+  })
+  it('genera token correctamente', async () => {
+    const header = {
+      authorization: refreshToken,
+    };
+    const response = await request(app.server).post(route).set(header);
+    expect(response.statusCode).toBe(200);
+  });
+  it('debe rechazar token jwt normal', async () => {
+    const header = {
+      authorization: token,
+    };
+    const response = await request(app.server).post(route).set(header);
+    expect(response.statusCode).toBe(403);
   });
 });
