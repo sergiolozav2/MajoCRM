@@ -1,1 +1,1 @@
-export * from './usuario_controller';
+export * from './auth_controller';
