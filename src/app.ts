@@ -10,12 +10,14 @@ import {
 } from './plugins/swagger_plugin_config';
 import {} from './types/index';
 import { errorHandlerPlugin, jwtPlugin } from './plugins';
+import FastifySSEPlugin from 'fastify-sse-v2';
 
 export const app = fastify({ logger: false });
 
 app.register(fastifyCors, {});
 app.register(fastifySwagger, swaggerOptions);
 app.register(fastifySwaggerUi, swaggerUiOptions);
+app.register(FastifySSEPlugin);
 app.register(jwtPlugin);
 
 app.register(autoload, {
