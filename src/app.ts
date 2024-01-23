@@ -21,8 +21,9 @@ app.register(FastifySSEPlugin);
 app.register(jwtPlugin);
 
 app.register(autoload, {
-  dir: path.join(__dirname, 'routes'),
+  dir: path.join(__dirname, 'modules'),
   options: { prefix: '/api' },
+  matchFilter: (path) => path.includes('routes'),
 });
 
 app.register(errorHandlerPlugin);
