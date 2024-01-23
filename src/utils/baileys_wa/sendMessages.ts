@@ -3,18 +3,16 @@ import { getSession } from './getSession';
 
 type SendMessageType = GenericMessage & {
   sesionID: string;
-  phone: string;
+  telefono: string;
 };
 
 type GenericMessage = TextMessage | ImageMessage;
 
-
 export async function sendMessageWA(data: SendMessageType) {
-  const { sesionID } = data;
-  let { session, timeout } = await getSession(sesionID);
+  let { session, timeout } = await getSession(data.sesionID);
 
   const payload = createMessagePayload(data);
-  const jid = `${data.phone}@s.whatsapp.net`;
+  const jid = `${data.telefono}@s.whatsapp.net`;
   setTimeout(() => {
     session
       .sendMessage(jid, payload)
@@ -31,7 +29,7 @@ export async function sendMessageWA(data: SendMessageType) {
 
 interface TextMessage {
   type: 'text';
-  message: string;
+  mensaje: string;
 }
 
 interface ImageMessage {
@@ -48,6 +46,6 @@ function createMessagePayload(data: GenericMessage): AnyMessageContent {
         },
       };
     case 'text':
-      return { text: data.message };
+      return { text: data.mensaje };
   }
 }
