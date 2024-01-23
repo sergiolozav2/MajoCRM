@@ -213,17 +213,19 @@ model PermisoRol {
 
   @@id([rolID, tipo])
 }
+
 model SesionWA {
   sesionWAID Int
-  creadoEn DateTime    @default(now())
+  creadoEn   DateTime @default(now())
 
   sessionID String
   id        String
-  data      String @db.text
+  data      String
 
-  empresa Empresa
-  creador       Usuario @relation(fields: [creadorID], references: [usuarioID])
-  creadorID     Int     @unique
+  empresa          Empresa @relation(fields: [empresaEmpresaID], references: [empresaID])
+  empresaEmpresaID Int
+  creador          Usuario @relation(fields: [creadorID], references: [usuarioID])
+  creadorID        Int     @unique
 }
 
 enum TipoUsuario {
