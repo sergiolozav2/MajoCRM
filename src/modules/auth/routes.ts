@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { schemaPartial } from '../utils/jsonSchemaBuilder';
-import { AuthSchemas } from '../schemas';
-import { AuthController } from '../controllers/auth_controller';
+import { schemaPartial } from '../../utils/jsonSchemaBuilder';
+import * as controllers from './controllers';
+import * as schemas from './schemas';
 
 const schema = schemaPartial({ tags: ['auth'] });
 function usuarioRoutes(
@@ -12,24 +12,24 @@ function usuarioRoutes(
   fastify.post(
     '/register',
     schema({
-      body: AuthSchemas.registrarUsuario,
+      body: schemas.registrarUsuario,
     }),
-    AuthController.registrarUsuario,
+    controllers.registrarUsuario,
   );
   fastify.post(
     '/login',
     schema({
-      body: AuthSchemas.iniciarSesion,
+      body: schemas.iniciarSesion,
     }),
-    AuthController.iniciarSesion,
+    controllers.iniciarSesion,
   );
 
   fastify.post(
     '/refreshToken',
     schema({
-      headers: AuthSchemas.autorizarToken,
+      headers: schemas.autorizarToken,
     }),
-    AuthController.reiniciarToken,
+    controllers.reiniciarToken,
   );
 
   done();
