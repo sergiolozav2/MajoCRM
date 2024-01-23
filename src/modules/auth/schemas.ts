@@ -1,14 +1,8 @@
 import { Type } from '@sinclair/typebox';
+import { usuarioSchema } from '../../shared/schemas';
 
 export const registrarUsuario = Type.Object({
-  usuario: Type.Object({
-    nombre: Type.String(),
-    apellido: Type.String(),
-    segundoApellido: Type.String(),
-    correo: Type.String({ format: 'email' }),
-    telefono: Type.String(),
-    password: Type.String(),
-  }),
+  usuario: usuarioSchema,
   empresa: Type.Object({
     nombreEmpresa: Type.String(),
   }),
