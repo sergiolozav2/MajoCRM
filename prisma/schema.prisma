@@ -34,6 +34,7 @@ model Usuario {
   tareasCreadas              Tarea[]             @relation("TareaUsuarioCreado")
   tareasAsignadas            Tarea[]             @relation("TareaUsuarioAsignado")
   rolesCreados               Rol[]               @relation("RolesCreados")
+  sesionesWACreadas          SesionWA[]
 
   empresa   Empresa? @relation("EmpresaUsuarioTrabajo", fields: [empresaID], references: [empresaID])
   empresaID Int?
@@ -54,6 +55,7 @@ model Empresa {
   etiquetaClientes    EtiquetaCliente[]
   mensajesImportantes MensajeImportante[]
   roles               Rol[]
+  sesionesWA          SesionWA[]
 
   trabajadores Usuario[] @relation("EmpresaUsuarioTrabajo")
 }
@@ -209,6 +211,18 @@ model PermisoRol {
   rol Rol @relation(fields: [rolID], references: [rolID])
 
   @@id([rolID, tipo])
+}
+model SesionWA {
+  sesionWAID Int
+  creadoEn DateTime    @default(now())
+
+  sessionID String
+  id        String
+  data      String @db.text
+
+  empresa Empresa
+  creador       Usuario @relation(fields: [creadorID], references: [usuarioID])
+  creadorID     Int     @unique
 }
 
 enum TipoUsuario {
