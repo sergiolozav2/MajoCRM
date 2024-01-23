@@ -25,6 +25,7 @@ model Usuario {
   segundoApellido String
   telefono        String
   password        String
+  verificado      Boolean
   empresaCreada   Empresa?    @relation("EmpresaUsuarioCreada")
   licencia        Licencia?
 
