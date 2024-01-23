@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { schemaPartial } from '../utils/jsonSchemaBuilder';
-import { ItemSchemas } from '../schemas';
-import { ItemController } from '../controllers';
+import { schemaPartial } from '../../utils/jsonSchemaBuilder';
+import * as controllers from './controllers';
+import * as schemas from './schemas';
 
 const schema = schemaPartial({ tags: ['items'] });
 function itemRoutes(
@@ -12,9 +12,9 @@ function itemRoutes(
   fastify.post(
     '/item',
     schema({
-      body: ItemSchemas.obtenerItems,
+      body: schemas.obtenerItems,
     }),
-    ItemController.obtenerTodosItems,
+    controllers.obtenerTodosItems,
   );
 
   done();
