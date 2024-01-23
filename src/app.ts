@@ -9,10 +9,10 @@ import {
   swaggerUiOptions,
 } from './plugins/swagger_plugin_config';
 import {} from './types/index';
-import { errorHandlerPlugin, jwtPlugin } from './plugins';
+import { setErrorHandlerPlugin, jwtPlugin } from './plugins';
 import FastifySSEPlugin from 'fastify-sse-v2';
 
-export const app = fastify({ logger: false });
+export const app = fastify({ logger: true });
 
 app.register(fastifyCors, {});
 app.register(fastifySwagger, swaggerOptions);
@@ -26,4 +26,4 @@ app.register(autoload, {
   matchFilter: (path) => path.includes('routes'),
 });
 
-app.register(errorHandlerPlugin);
+setErrorHandlerPlugin(app)
