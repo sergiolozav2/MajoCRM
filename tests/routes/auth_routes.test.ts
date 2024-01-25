@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { app } from '../../src/app';
 import { borrarUsuario, validUserRegisterPayload } from './auth_routes.utils';
-import { prisma } from '../../src/prisma';
 
 describe('POST /register', () => {
   const route = '/api/register';
@@ -119,14 +118,14 @@ describe('POST /refreshToken', () => {
       email: userPayload.usuario.correo,
       password: userPayload.usuario.password,
     });
-    usuarioID = response.body.usuario.usuarioID
+    usuarioID = response.body.usuario.usuarioID;
     token = response.body.token;
     refreshToken = response.body.refreshToken;
   });
 
   afterAll(async () => {
-    await borrarUsuario(usuarioID)
-  })
+    await borrarUsuario(usuarioID);
+  });
   it('genera token correctamente', async () => {
     const header = {
       authorization: refreshToken,
