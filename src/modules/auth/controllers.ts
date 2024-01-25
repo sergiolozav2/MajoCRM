@@ -15,20 +15,14 @@ export async function registrarUsuario(
 ) {
   const { password } = req.body.usuario;
   const hashedPassword = await AuthServices.hashPassword(password);
-  const usuario = await prisma.usuario.create({
+  const usuario = prisma.usuario.create({
     data: {
       ...req.body.usuario,
       password: hashedPassword,
-      tipo: TipoUsuario.EMPRESARIO,
-      empresaCreada: {
+      tipo: TipoUsuario.ADMINISTRADOR,
+      empresa: {
         create: req.body.empresa,
       },
-    },
-  });
-
-  const usuarioInfo = await prisma.usuario.findFirst({
-    where: {
-      usuarioID: usuario.usuarioID,
     },
     select: {
       usuarioID: true,
@@ -39,10 +33,11 @@ export async function registrarUsuario(
       licencia: true,
       tipo: true,
       rol: true,
-      empresaCreada: true,
+      empresa: true,
     },
   });
-  return usuarioInfo;
+
+  return usuario;
 }
 
 export async function iniciarSesion(
@@ -76,7 +71,6 @@ export async function iniciarSesion(
       usuarioID: true,
       nombre: true,
       correo: true,
-      empresaCreada: true,
       empresa: true,
       tipo: true,
       telefono: true,
@@ -87,8 +81,7 @@ export async function iniciarSesion(
 
   const payload = {
     usuarioID: usuario.usuarioID,
-    empresaID:
-      usuario.empresa?.empresaID ?? usuario.empresaCreada?.empresaID ?? 0,
+    empresaID: usuario.empresa.empresaID,
   };
   const token = req.server.crearToken(payload);
   const refreshToken = req.server.crearRefreshToken(payload);
