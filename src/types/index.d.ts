@@ -1,16 +1,23 @@
-import fastify from 'fastify';
-
 declare module 'fastify' {
   interface FastifyInstance {
-    crearToken: (usuarioID: number) => string;
-    crearRefreshToken: (usuarioID: number) => string;
-    decodificar: (token: string) => Promise<RefreshTokenType>;
+    crearToken: (payload: TokenPayload) => string;
+    crearRefreshToken: (payload: TokenPayload) => string;
+    decodificar: (token: string) => Promise<TokenPayload>;
+    autenticar: (
+      req: FastifyRequest,
+      reply: FastifyReply,
+      done: () => void,
+    ) => void;
   }
 }
 
-export type RefreshTokenType = {
+export type TokenPayload = {
   usuarioID: number;
-  type: 'jwt' | 'refresh';
-  iat: number;
-  exp: number;
+  empresaID: number;
+  type?: 'jwt' | 'refresh';
 };
+declare module '@fastify/jwt' {
+  interface FastifyJWT {
+    user: TokenPayload;
+  }
+}

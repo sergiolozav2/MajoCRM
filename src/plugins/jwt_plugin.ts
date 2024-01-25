@@ -1,11 +1,11 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { CustomError } from '../errors/custom_error';
-import { STATUS_CODES } from 'http';
+import { ErrorTokenInvalido } from '../errors/custom_error';
 import fastifyJwt from '@fastify/jwt';
-import { RefreshTokenType } from '../types';
+import { TokenPayload } from '../types';
 import fp from 'fastify-plugin';
+import dotenv from 'dotenv';
 
-require('dotenv').config();
+dotenv.config();
 
 function jwtPlugin_(
   server: FastifyInstance,
@@ -15,34 +15,43 @@ function jwtPlugin_(
   const tokenDuracion = '15min';
   const refreshTokenDuracion = '24h';
 
-  const token = process.env.SECRET_JWT;
-  if (!token) {
+  const secret_jwt = process.env.SECRET_JWT;
+  if (!secret_jwt) {
     throw Error('SECRET_JWT no encontrado en .env');
   }
 
   server.register(fastifyJwt, {
-    secret: token,
+    secret: secret_jwt,
   });
 
-  server.decorate('crearToken', (usuarioID) => {
-    const jwtContenido = { usuarioID, type: 'jwt' };
-    const token = server.jwt.sign(jwtContenido, {
+  server.decorate('crearToken', (payload: TokenPayload) => {
+    payload.type = 'jwt';
+    const token = server.jwt.sign(payload, {
       expiresIn: tokenDuracion,
     });
     return token;
   });
 
-  server.decorate('crearRefreshToken', (usuarioID) => {
-    const jwtContenido = { usuarioID, type: 'refresh' };
-    const token = server.jwt.sign(jwtContenido, {
+  server.decorate('crearRefreshToken', (payload: TokenPayload) => {
+    payload.type = 'refresh';
+    const token = server.jwt.sign(payload, {
       expiresIn: refreshTokenDuracion,
     });
     return token;
   });
 
   server.decorate('decodificar', async (token) => {
-    const decoded = server.jwt.verify(token);
-    return decoded as RefreshTokenType;
+    const decoded = server.jwt.verify<TokenPayload>(token);
+    return decoded;
+  });
+
+  server.decorate('autenticar', (req, reply, done) => {
+    const token = req.headers.authorization;
+    if (!token) {
+      throw new ErrorTokenInvalido();
+    }
+    req.user = server.jwt.verify(token);
+    done();
   });
   done();
 }
