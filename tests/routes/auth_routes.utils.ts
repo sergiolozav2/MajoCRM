@@ -1,28 +1,17 @@
-import { prisma } from '../../src/prisma';
+import { faker } from '@faker-js/faker';
 
-export const validUserRegisterPayload = {
-  usuario: {
-    nombre: 'pedro',
-    apellido: 'juan',
-    segundoApellido: 'lopez',
-    correo: 'lopez@example.com',
-    telefono: '1234234',
-    password: 'password',
-  },
-  empresa: {
-    nombreEmpresa: 'empresacorp',
-  },
-};
-
-export async function borrarUsuario(usuarioID: number) {
-  await prisma.empresa.delete({
-    where: {
-      creadorID: usuarioID,
+export function createRegisterPayload() {
+  return {
+    usuario: {
+      nombre: faker.person.firstName(),
+      apellido: faker.person.lastName(),
+      segundoApellido: faker.person.lastName(),
+      correo: faker.internet.email(),
+      telefono: faker.phone.number(),
+      password: faker.internet.password(),
     },
-  });
-  await prisma.usuario.delete({
-    where: {
-      usuarioID: usuarioID,
+    empresa: {
+      nombreEmpresa: faker.company.name(),
     },
-  });
+  };
 }

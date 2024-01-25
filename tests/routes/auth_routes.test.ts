@@ -1,29 +1,32 @@
 import request from 'supertest';
 import { app } from '../../src/app';
-import { borrarUsuario, validUserRegisterPayload } from './auth_routes.utils';
+import { createRegisterPayload } from './auth_routes.utils';
+
+const loginRoute = '/api/auth/login';
+const registerRoute = '/api/auth/register';
+const refreshTokenRoute = '/api/auth/refreshToken';
 
 describe('POST /register', () => {
-  const route = '/api/register';
-
   beforeAll(async () => {
     await app.ready();
   });
   it('crea usuario y empresa correctamente', async () => {
-    const payload = validUserRegisterPayload;
-    const response = await request(app.server).post(route).send(payload);
+    const payload = createRegisterPayload();
+    const response = await request(app.server)
+      .post(registerRoute)
+      .send(payload);
     expect(response.body).toMatchObject({
-      nombre: 'pedro',
-      apellido: 'juan',
-      correo: 'lopez@example.com',
-      telefono: '1234234',
+      nombre: payload.usuario.nombre,
+      apellido: payload.usuario.apellido,
+      correo: payload.usuario.correo,
+      telefono: payload.usuario.telefono,
       tipo: 'EMPRESARIO',
       licencia: null,
       rol: null,
-      empresaCreada: {
-        nombreEmpresa: 'empresacorp',
+      empresa: {
+        nombreEmpresa: payload.empresa.nombreEmpresa,
       },
     });
-    await borrarUsuario(response.body.usuarioID);
   });
 
   it('debe fallar falta usuario', async () => {
@@ -32,7 +35,9 @@ describe('POST /register', () => {
         nombreEmpresa: 'holacorp',
       },
     };
-    const response = await request(app.server).post(route).send(payload);
+    const response = await request(app.server)
+      .post(registerRoute)
+      .send(payload);
     expect(response.statusCode).toBe(400);
   });
 
@@ -47,19 +52,19 @@ describe('POST /register', () => {
         password: 'password',
       },
     };
-    const response = await request(app.server).post(route).send(payload);
+    const response = await request(app.server)
+      .post(registerRoute)
+      .send(payload);
     expect(response.statusCode).toBe(400);
   });
 });
 
 describe('POST /login', () => {
-  const route = '/api/login';
-
-  const userPayload = validUserRegisterPayload;
+  const userPayload = createRegisterPayload();
   beforeAll(async () => {
     await app.ready();
     // Registrar usuario primero
-    await request(app.server).post('/api/register').send(userPayload);
+    await request(app.server).post(registerRoute).send(userPayload);
   });
 
   it('inicia sesión correctamente', async () => {
@@ -67,7 +72,7 @@ describe('POST /login', () => {
       email: userPayload.usuario.correo,
       password: userPayload.usuario.password,
     };
-    const response = await request(app.server).post(route).send(payload);
+    const response = await request(app.server).post(loginRoute).send(payload);
     expect(response.statusCode).toBe(200);
   });
 
@@ -76,7 +81,7 @@ describe('POST /login', () => {
       email: userPayload.usuario.correo,
       password: userPayload.usuario.password,
     };
-    const response = await request(app.server).post(route).send(payload);
+    const response = await request(app.server).post(loginRoute).send(payload);
 
     expect(response.body).toMatchObject({
       token: expect.any(String),
@@ -89,7 +94,7 @@ describe('POST /login', () => {
       email: 'correofalso12342@email.com',
       password: 'password',
     };
-    const response = await request(app.server).post(route).send(payload);
+    const response = await request(app.server).post(loginRoute).send(payload);
     expect(response.statusCode).toBe(401);
   });
 
@@ -98,46 +103,43 @@ describe('POST /login', () => {
       email: userPayload.usuario.correo,
       password: 'password1234',
     };
-    const response = await request(app.server).post(route).send(payload);
+    const response = await request(app.server).post(loginRoute).send(payload);
     expect(response.statusCode).toBe(401);
   });
 });
 
 describe('POST /refreshToken', () => {
-  const route = '/api/refreshToken';
-
-  const userPayload = validUserRegisterPayload;
+  const userPayload = createRegisterPayload();
   let token = '';
   let refreshToken = '';
-  let usuarioID = 0;
   beforeAll(async () => {
     await app.ready();
-    await request(app.server).post('/api/register').send(userPayload);
+    await request(app.server).post(registerRoute).send(userPayload);
 
-    const response = await request(app.server).post('/api/login').send({
+    const response = await request(app.server).post(loginRoute).send({
       email: userPayload.usuario.correo,
       password: userPayload.usuario.password,
     });
-    usuarioID = response.body.usuario.usuarioID;
     token = response.body.token;
     refreshToken = response.body.refreshToken;
   });
 
-  afterAll(async () => {
-    await borrarUsuario(usuarioID);
-  });
   it('genera token correctamente', async () => {
     const header = {
       authorization: refreshToken,
     };
-    const response = await request(app.server).post(route).set(header);
+    const response = await request(app.server)
+      .post(refreshTokenRoute)
+      .set(header);
     expect(response.statusCode).toBe(200);
   });
   it('debe rechazar token jwt normal', async () => {
     const header = {
       authorization: token,
     };
-    const response = await request(app.server).post(route).set(header);
+    const response = await request(app.server)
+      .post(refreshTokenRoute)
+      .set(header);
     expect(response.statusCode).toBe(403);
   });
 });
