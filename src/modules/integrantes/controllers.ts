@@ -1,5 +1,5 @@
 import { Static } from '@sinclair/typebox';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyRequest } from 'fastify';
 import * as schemas from './schemas';
 import { prisma } from '../../prisma';
 import { TipoUsuario } from '@prisma/client';
@@ -9,7 +9,6 @@ import { AuthServices } from '../../services';
 type crearIntegranteBody = Static<typeof schemas.invitarIntegrante>;
 export async function crearIntegrante(
   req: FastifyRequest<{ Body: crearIntegranteBody }>,
-  reply: FastifyReply,
 ) {
   const hashed = await AuthServices.hashPassword(req.body.usuario.password);
   const usuario = await prisma.usuario.create({
@@ -29,4 +28,16 @@ export async function crearIntegrante(
   const emailResult = enviarEmailInvitacion(usuario.correo, enlaceVerificacion);
 
   return emailResult;
+}
+
+export function obtenerIntegrantes(req: FastifyRequest) {
+  const integrantes = prisma.usuario.findMany({
+    where: {
+      usuarioID: req.user.usuarioID,
+    },
+    include: {
+      rol: true,
+    },
+  });
+  return integrantes;
 }

@@ -12,6 +12,18 @@ export default function integrantesRoutes(
   done: () => void,
 ) {
   fastify.post(
+    '/',
+    {
+      onRequest: [fastify.autenticar],
+      schema: {
+        tags: ['integrantes'],
+        headers: schemas.obtenerIntegrantes,
+      },
+    },
+    controllers.obtenerIntegrantes,
+  );
+
+  fastify.post(
     '/invitar_usuario',
     schema({
       body: schemas.invitarIntegrante,
