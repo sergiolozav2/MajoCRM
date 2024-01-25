@@ -20,7 +20,7 @@ model Usuario {
   creadoEn        DateTime    @default(now())
   tipo            TipoUsuario
   nombre          String
-  correo          String
+  correo          String  @unique
   apellido        String
   segundoApellido String
   telefono        String
