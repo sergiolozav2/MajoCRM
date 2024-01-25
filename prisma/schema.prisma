@@ -20,13 +20,12 @@ model Usuario {
   creadoEn        DateTime    @default(now())
   tipo            TipoUsuario
   nombre          String
-  correo          String  @unique
+  correo          String      @unique
   apellido        String
   segundoApellido String
   telefono        String
   password        String
   verificado      Boolean
-  empresaCreada   Empresa?    @relation("EmpresaUsuarioCreada")
   licencia        Licencia?
 
   itemsCreados               Item[]
@@ -37,9 +36,9 @@ model Usuario {
   rolesCreados               Rol[]               @relation("RolesCreados")
   sesionesWACreadas          SesionWA[]
 
-  empresa   Empresa? @relation("EmpresaUsuarioTrabajo", fields: [empresaID], references: [empresaID])
-  empresaID Int?
-  rol       Rol?     @relation("RolUsuario", fields: [rolID], references: [rolID])
+  empresa   Empresa @relation("EmpresaUsuarioTrabajo", fields: [empresaID], references: [empresaID])
+  empresaID Int
+  rol       Rol?    @relation("RolUsuario", fields: [rolID], references: [rolID])
   rolID     Int?
 }
 
@@ -47,10 +46,7 @@ model Empresa {
   empresaID Int      @id @default(autoincrement())
   creadoEn  DateTime @default(now())
 
-  nombreEmpresa String
-  creador       Usuario @relation("EmpresaUsuarioCreada", fields: [creadorID], references: [usuarioID])
-  creadorID     Int     @unique
-
+  nombreEmpresa       String
   items               Item[]
   clientes            Cliente[]
   etiquetaClientes    EtiquetaCliente[]
