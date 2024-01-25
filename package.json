@@ -11,7 +11,7 @@
     "test:migrate": "dotenv -e .env.test -- prisma migrate deploy",
     "test:setup": "docker compose up -d && sleep 1 && npm run test:migrate",
     "test:clear": "docker compose down",
-    "test:integration": "npm run test:clear && dotenv -e .env.test -- npm run test:setup && jest --coverage"
+    "test:integration": "npm run test:clear && dotenv -e .env.test -- npm run test:setup && jest --verbose=true"
   },
   "keywords": [],
   "author": "",
@@ -41,6 +41,7 @@
     "ts-jest": "^29.1.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.0",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.10.4",
     "@types/nodemailer": "^6.4.14",
