@@ -1,4 +1,4 @@
-import fastify, { FastifyReply, FastifyRequest } from 'fastify';
+import fastify from 'fastify';
 import path from 'path';
 import autoload from '@fastify/autoload';
 import fastifySwagger from '@fastify/swagger';
@@ -26,4 +26,4 @@ app.register(autoload, {
   matchFilter: (path) => path.includes('routes'),
 });
 
-setErrorHandlerPlugin(app)
+setErrorHandlerPlugin(app);
