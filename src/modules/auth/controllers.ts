@@ -19,7 +19,7 @@ export async function registrarUsuario(
     data: {
       ...req.body.usuario,
       password: hashedPassword,
-      tipo: TipoUsuario.ADMINISTRADOR,
+      tipo: TipoUsuario.EMPRESARIO,
       empresa: {
         create: req.body.empresa,
       },
@@ -36,7 +36,6 @@ export async function registrarUsuario(
       empresa: true,
     },
   });
-
   return usuario;
 }
 
