@@ -1,7 +1,3 @@
-import fastifySwagger from '@fastify/swagger';
-import fastifySwaggerUi from '@fastify/swagger-ui';
-import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-
 export const swaggerOptions = {
   swagger: {
     info: {

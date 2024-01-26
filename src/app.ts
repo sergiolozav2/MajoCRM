@@ -4,10 +4,7 @@ import autoload from '@fastify/autoload';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import fastifyCors from '@fastify/cors';
-import {
-  swaggerOptions,
-  swaggerUiOptions,
-} from './plugins/swagger_plugin_config';
+import { swaggerOptions, swaggerUiOptions } from './services/swagger_config';
 import {} from './types/index';
 import { setErrorHandlerPlugin, jwtPlugin } from './plugins';
 import FastifySSEPlugin from 'fastify-sse-v2';
