@@ -11,7 +11,7 @@ export default function integrantesRoutes(
   options: FastifyPluginOptions,
   done: () => void,
 ) {
-  fastify.post(
+  fastify.get(
     '/',
     {
       onRequest: [fastify.autenticar],
