@@ -9,3 +9,8 @@ export const crearItem = Type.Object({
   descripcion: Type.String(),
   precio: Type.Number(),
 });
+
+export const editarItem = Type.Object({
+  item: Type.Partial(crearItem),
+  itemID: Type.Integer(),
+});

@@ -34,6 +34,20 @@ function itemRoutes(
     },
     controllers.crearItem,
   );
+
+  fastify.put(
+    '/',
+    {
+      onRequest: [fastify.autenticar as never],
+      schema: {
+        tags,
+        headers: sharedSchemas.tokenSchema,
+        body: schemas.editarItem,
+      },
+    },
+    controllers.crearItem,
+  );
+
   done();
 }
 
