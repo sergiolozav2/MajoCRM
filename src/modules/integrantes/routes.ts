@@ -4,6 +4,8 @@ import * as controllers from './controllers';
 import * as schemas from './schemas';
 import * as sharedSchemas from '../../shared/schemas';
 
+const tags = ['integrantes'];
+
 export default function integrantesRoutes(
   fastify: FastifyInstance,
   options: FastifyPluginOptions,
@@ -14,7 +16,7 @@ export default function integrantesRoutes(
     {
       onRequest: [fastify.autenticar],
       schema: {
-        tags: ['integrantes'],
+        tags,
         headers: sharedSchemas.tokenSchema,
       },
     },
@@ -26,7 +28,7 @@ export default function integrantesRoutes(
     {
       onRequest: [fastify.autenticar as never],
       schema: {
-        tags: ['integrantes'],
+        tags,
         body: schemas.invitarIntegrante,
         headers: sharedSchemas.tokenSchema,
       },

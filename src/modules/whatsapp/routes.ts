@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { schemaPartial } from '../../utils/jsonSchemaBuilder';
 import * as schemas from './schemas';
 import * as controllers from './controllers';
 
-const schema = schemaPartial({ tags: ['sesionWA'] });
+const tags = ['sesionWa'];
+
 function sesionWARoutes(
   fastify: FastifyInstance,
   options: FastifyPluginOptions,
@@ -12,9 +12,10 @@ function sesionWARoutes(
   fastify.get(
     '/sesion',
     {
-      ...schema({
+      schema: {
+        tags,
         querystring: schemas.crearSesion,
-      }),
+      },
     },
     controllers.crearSesion,
   );
@@ -22,7 +23,10 @@ function sesionWARoutes(
   fastify.post(
     '/enviar-mensaje',
     {
-      ...schema({ body: schemas.enviarMensaje }),
+      schema: {
+        tags,
+        body: schemas.enviarMensaje,
+      },
     },
     controllers.enviarMensaje,
   );
@@ -30,7 +34,10 @@ function sesionWARoutes(
   fastify.post(
     '/enviar-imagen',
     {
-      ...schema({ body: schemas.enviarImagen }),
+      schema: {
+        tags,
+        body: schemas.enviarImagen,
+      },
     },
     controllers.enviarImagen,
   );
