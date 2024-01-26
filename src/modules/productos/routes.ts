@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import * as controllers from './controllers';
-import * as schemas from './schemas';
 
 const tags = ['items'];
 
@@ -10,11 +9,11 @@ function itemRoutes(
   done: () => void,
 ) {
   fastify.post(
-    '/item',
+    '/',
     {
+      onRequest: [fastify.autenticar as never],
       schema: {
         tags,
-        body: schemas.obtenerItems,
       },
     },
     controllers.obtenerTodosItems,
