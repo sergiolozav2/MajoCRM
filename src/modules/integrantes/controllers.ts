@@ -15,10 +15,11 @@ export async function crearIntegrante(
     data: {
       ...req.body.usuario,
       tipo: TipoUsuario.COLABORADOR,
+      verificado: false,
       password: hashed,
       empresa: {
         connect: {
-          empresaID: req.body.empresaID,
+          empresaID: req.user.empresaID,
         },
       },
     },
@@ -33,9 +34,15 @@ export async function crearIntegrante(
 export function obtenerIntegrantes(req: FastifyRequest) {
   const integrantes = prisma.usuario.findMany({
     where: {
-      usuarioID: req.user.usuarioID,
+      empresaID: req.user.empresaID,
     },
-    include: {
+    select: {
+      usuarioID: true,
+      nombre: true,
+      apellido: true,
+      correo: true,
+      telefono: true,
+      tipo: true,
       rol: true,
     },
   });
