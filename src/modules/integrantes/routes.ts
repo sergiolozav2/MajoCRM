@@ -23,6 +23,19 @@ export default function integrantesRoutes(
     controllers.obtenerIntegrantes,
   );
 
+  fastify.put(
+    '/',
+    {
+      onRequest: [fastify.autenticar as never],
+      schema: {
+        tags,
+        body: schemas.editarIntegrante,
+        headers: sharedSchemas.tokenSchema,
+      },
+    },
+    controllers.editarIntegrante,
+  );
+
   fastify.post(
     '/invitar_usuario',
     {

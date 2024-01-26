@@ -7,6 +7,8 @@ import { enviarEmailInvitacion } from './services/email_invitacion';
 import { AuthServices } from '../../services';
 
 type crearIntegranteBody = Static<typeof schemas.invitarIntegrante>;
+type editarIntegranteBody = Static<typeof schemas.editarIntegrante>;
+
 export async function crearIntegrante(
   req: FastifyRequest<{ Body: crearIntegranteBody }>,
 ) {
@@ -29,6 +31,28 @@ export async function crearIntegrante(
   const emailResult = enviarEmailInvitacion(usuario.correo, enlaceVerificacion);
 
   return emailResult;
+}
+
+export async function editarIntegrante(
+  req: FastifyRequest<{ Body: editarIntegranteBody }>,
+) {
+  let hashed;
+
+  if (req.body.usuario.password) {
+    hashed = await AuthServices.hashPassword(req.body.usuario.password);
+  }
+
+  const usuario = await prisma.usuario.update({
+    where: {
+      usuarioID: req.body.usuarioID,
+    },
+    data: {
+      ...req.body.usuario,
+      password: hashed,
+    },
+  });
+
+  return usuario;
 }
 
 export function obtenerIntegrantes(req: FastifyRequest) {
