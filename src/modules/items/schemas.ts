@@ -8,6 +8,7 @@ export const crearItem = Type.Object({
   nombreItem: Type.String(),
   descripcion: Type.String(),
   precio: Type.Number(),
+  informacionExtra: Type.String({ default: '{}' }),
 });
 
 export const editarItem = Type.Object({
