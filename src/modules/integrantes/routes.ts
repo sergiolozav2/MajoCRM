@@ -1,10 +1,8 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { schemaPartial } from '../../utils/jsonSchemaBuilder';
 
 import * as controllers from './controllers';
 import * as schemas from './schemas';
-
-const schema = schemaPartial({ tags: ['integrantes'] });
+import * as sharedSchemas from '../../shared/schemas';
 
 export default function integrantesRoutes(
   fastify: FastifyInstance,
@@ -17,7 +15,7 @@ export default function integrantesRoutes(
       onRequest: [fastify.autenticar],
       schema: {
         tags: ['integrantes'],
-        headers: schemas.obtenerIntegrantes,
+        headers: sharedSchemas.tokenSchema,
       },
     },
     controllers.obtenerIntegrantes,
@@ -25,9 +23,14 @@ export default function integrantesRoutes(
 
   fastify.post(
     '/invitar_usuario',
-    schema({
-      body: schemas.invitarIntegrante,
-    }),
+    {
+      onRequest: [fastify.autenticar as never],
+      schema: {
+        tags: ['integrantes'],
+        body: schemas.invitarIntegrante,
+        headers: sharedSchemas.tokenSchema,
+      },
+    },
     controllers.crearIntegrante,
   );
 
