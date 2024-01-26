@@ -7,5 +7,9 @@ export const usuarioSchema = Type.Object({
   correo: Type.String({ format: 'email' }),
   telefono: Type.String(),
   password: Type.String(),
-  verificado: Type.Boolean({default: false})
+  verificado: Type.Boolean({ default: false }),
+});
+
+export const tokenSchema = Type.Object({
+  authorization: Type.String(),
 });
