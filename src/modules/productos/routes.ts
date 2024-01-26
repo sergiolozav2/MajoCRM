@@ -8,7 +8,7 @@ function itemRoutes(
   options: FastifyPluginOptions,
   done: () => void,
 ) {
-  fastify.post(
+  fastify.get(
     '/',
     {
       onRequest: [fastify.autenticar as never],
@@ -18,7 +18,6 @@ function itemRoutes(
     },
     controllers.obtenerTodosItems,
   );
-
   done();
 }
 
