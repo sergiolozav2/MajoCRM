@@ -6,8 +6,9 @@ import fastifySwaggerUi from '@fastify/swagger-ui';
 import fastifyCors from '@fastify/cors';
 import { swaggerOptions, swaggerUiOptions } from './services/swagger_config';
 import {} from './types/index';
-import { setErrorHandlerPlugin, jwtPlugin } from './plugins';
+import { setErrorHandlerPlugin } from './plugins';
 import FastifySSEPlugin from 'fastify-sse-v2';
+import { jwtPlugin } from './plugins/jwt/plugin';
 
 export const app = fastify({ logger: true });
 
