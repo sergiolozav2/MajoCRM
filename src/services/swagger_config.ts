@@ -4,7 +4,6 @@ export const swaggerOptions = {
       title: 'MajoCRM',
       version: '0.0.1',
     },
-    host: '127.0.0.1:5000',
     basePath: '/api',
     schemes: ['http', 'https'],
     consumes: ['application/json'],
