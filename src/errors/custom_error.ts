@@ -20,6 +20,12 @@ export class ErrorPermisoInsuficiente extends CustomError {
   }
 }
 
+export class ErrorRolInsuficiente extends CustomError {
+  constructor(statusCode = 403, message = 'Rol de usuario insuficiente') {
+    super(statusCode, message, 'PERMISO_INSUFICIENTE');
+  }
+}
+
 export class ErrorLoginInvalido extends CustomError {
   constructor(statusCode = 401, message = 'Credenciales incorrectas') {
     super(statusCode, message, 'INICIO_SESION_FALLADO');

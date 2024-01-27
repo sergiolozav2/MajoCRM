@@ -1,3 +1,5 @@
+import { permitirFunctionType } from '../plugins/permisos';
+
 declare module 'fastify' {
   interface FastifyInstance {
     crearToken: (payload: TokenPayload) => string;
@@ -8,6 +10,7 @@ declare module 'fastify' {
       reply: FastifyReply,
       done: () => void,
     ) => void;
+    permitir: permitirFunctionType;
   }
 }
 
