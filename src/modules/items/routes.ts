@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import * as controllers from './controllers';
 import * as schemas from './schemas';
-import * as sharedSchemas from '../../shared/schemas';
+import * as sharedSchemas from '../common/schemas';
 
 const tags = ['items'];
 

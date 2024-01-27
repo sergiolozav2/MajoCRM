@@ -1,5 +1,5 @@
 import { Type } from '@sinclair/typebox';
-import { usuarioSchema } from '../../shared/schemas';
+import { usuarioSchema } from '../common/schemas';
 
 export const invitarIntegrante = Type.Object({
   usuario: usuarioSchema,
