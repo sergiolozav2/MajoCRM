@@ -35,7 +35,7 @@ function usuarioRoutes(
     {
       schema: {
         tags,
-        body: schemas.autorizarToken,
+        headers: schemas.autorizarToken,
       },
     },
     controllers.reiniciarToken,
