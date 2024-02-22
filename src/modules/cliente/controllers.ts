@@ -4,6 +4,7 @@ import * as schemas from './schemas';
 import { Static } from '@sinclair/typebox';
 
 type crearClienteBody = Static<typeof schemas.crearCliente>;
+type editarClienteBody = Static<typeof schemas.editarCliente>;
 
 export async function obtenerTodosCliente(req: FastifyRequest) {
   const cliente = await prisma.cliente.findMany({
@@ -42,6 +43,41 @@ export async function crearCliente(
     },
     include: {
       clienteIdentidad: true,
+    },
+  });
+  return cliente;
+}
+
+export async function editarCliente(
+  req: FastifyRequest<{
+    Body: editarClienteBody;
+  }>,
+) {
+  const identificador = req.body.identificador;
+  let clienteIdentidadID: number | undefined;
+  if (identificador) {
+    let clienteIdentidad = await prisma.clienteIdentidad.findFirst({
+      where: {
+        identificador,
+      },
+    });
+
+    if (!clienteIdentidad) {
+      clienteIdentidad = await prisma.clienteIdentidad.create({
+        data: {
+          identificador,
+        },
+      });
+    }
+    clienteIdentidadID = clienteIdentidad.clienteIdentidadID;
+  }
+  const cliente = await prisma.cliente.update({
+    where: {
+      clienteID: req.body.clienteID,
+    },
+    data: {
+      ...req.body.cliente,
+      clienteIdentidadID,
     },
   });
   return cliente;

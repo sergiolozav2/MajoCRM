@@ -29,6 +29,17 @@ function itemRoutes(
     },
     controllers.crearCliente,
   );
+  fastify.put(
+    '/',
+    {
+      onRequest: [fastify.autenticar as never],
+      schema: {
+        headers: sharedSchemas.tokenSchema,
+        body: schemas.editarCliente,
+      },
+    },
+    controllers.editarCliente,
+  );
   done();
 }
 

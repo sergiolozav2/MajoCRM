@@ -6,3 +6,13 @@ export const crearCliente = Type.Object({
     nombreCliente: Type.String(),
   }),
 });
+
+export const editarCliente = Type.Object({
+  clienteID: Type.Integer(),
+  identificador: Type.Optional(Type.String()),
+  cliente: Type.Optional(
+    Type.Object({
+      nombreCliente: Type.String(),
+    }),
+  ),
+});
