@@ -11,6 +11,9 @@ export async function obtenerTodosCliente(req: FastifyRequest) {
     where: {
       empresaID: req.user.empresaID,
     },
+    include: {
+      clienteIdentidad: true,
+    },
   });
   return { list: cliente };
 }
