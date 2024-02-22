@@ -11,7 +11,6 @@ export const swaggerOptions = {
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transform({ schema, url }: any) {
-    console.log(schema, url);
     const segments = url.split('/');
     const module = segments[2];
     schema.tags = [module];
