@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import * as controllers from './controllers';
 import * as sharedSchemas from '../common/schemas';
+import * as schemas from './schemas';
 
 function itemRoutes(
   fastify: FastifyInstance,
@@ -16,6 +17,17 @@ function itemRoutes(
       },
     },
     controllers.obtenerTodosCliente,
+  );
+  fastify.post(
+    '/',
+    {
+      onRequest: [fastify.autenticar as never],
+      schema: {
+        headers: sharedSchemas.tokenSchema,
+        body: schemas.crearCliente,
+      },
+    },
+    controllers.crearCliente,
   );
   done();
 }
