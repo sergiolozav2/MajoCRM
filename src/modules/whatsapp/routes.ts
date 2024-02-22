@@ -2,8 +2,6 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import * as schemas from './schemas';
 import * as controllers from './controllers';
 
-const tags = ['sesionWa'];
-
 function sesionWARoutes(
   fastify: FastifyInstance,
   options: FastifyPluginOptions,
@@ -13,7 +11,6 @@ function sesionWARoutes(
     '/sesion',
     {
       schema: {
-        tags,
         querystring: schemas.crearSesion,
       },
     },
@@ -24,7 +21,6 @@ function sesionWARoutes(
     '/enviar-mensaje',
     {
       schema: {
-        tags,
         body: schemas.enviarMensaje,
       },
     },
@@ -35,7 +31,6 @@ function sesionWARoutes(
     '/enviar-imagen',
     {
       schema: {
-        tags,
         body: schemas.enviarImagen,
       },
     },

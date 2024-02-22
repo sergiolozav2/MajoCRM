@@ -2,8 +2,6 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import * as controllers from './controllers';
 import * as schemas from './schemas';
 
-const tags = ['auth'];
-
 function usuarioRoutes(
   fastify: FastifyInstance,
   options: FastifyPluginOptions,
@@ -13,7 +11,6 @@ function usuarioRoutes(
     '/register',
     {
       schema: {
-        tags,
         body: schemas.registrarUsuario,
       },
     },
@@ -23,7 +20,6 @@ function usuarioRoutes(
     '/login',
     {
       schema: {
-        tags,
         body: schemas.iniciarSesion,
       },
     },
@@ -34,7 +30,6 @@ function usuarioRoutes(
     '/refreshToken',
     {
       schema: {
-        tags,
         headers: schemas.autorizarToken,
       },
     },
